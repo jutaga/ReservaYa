@@ -1,0 +1,5 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno (contraseñas, claves, datos de la BD)
+.env

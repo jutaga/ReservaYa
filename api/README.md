@@ -18,8 +18,16 @@ npm run dev            # nodemon → http://localhost:3000
 | `npm run format` | formatea con Prettier |
 | `npm run format:check` | comprueba el formato sin cambiar nada |
 
-Variables del `.env` (ver `.env.example`): `NODE_ENV`, `PORT`, `BACKEND_URL`, `FRONTEND_URL`, `MYSQL_BD_HOST`, `MYSQL_BD_PORT`, `MYSQL_BD_NAME`, `MYSQL_BD_USER`, `MYSQL_BD_PASSWORD`.
-Se añadirán `JWT_SECRET` (login) y `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USER`, `EMAIL_PASS` (Mailtrap).
+Variables del `.env` (ver `.env.example`):
+
+| Grupo | Variables |
+|---|---|
+| Servidor | `NODE_ENV`, `PORT`, `BACKEND_URL` |
+| Frontend | `FRONTEND_URL` (sin `/` al final: los emails enlazan a `FRONTEND_URL/confirmar/<token>`) |
+| MySQL | `MYSQL_BD_HOST`, `MYSQL_BD_PORT`, `MYSQL_BD_NAME`, `MYSQL_BD_USER`, `MYSQL_BD_PASSWORD` |
+| Email (Mailtrap) | `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USER`, `EMAIL_PASS`: cada quien usa las credenciales SMTP de su propio inbox de Mailtrap (Email Testing → Inboxes → SMTP Settings) |
+
+Se añadirá `JWT_SECRET` (login).
 
 ## Estructura
 
@@ -27,6 +35,7 @@ Se añadirán `JWT_SECRET` (login) y `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USER`, `
 config/        conexión a MySQL (Sequelize)
 controllers/   lógica de cada endpoint (reciben req, responden res)
 helpers/       funciones sueltas reutilizables (generarToken, enviar emails…)
+  plantillas/  HTML y texto de cada email (confirmarCuenta…)
 middleware/    validarCampos, errores, protegerRuta, soloRol…
 models/        modelos de Sequelize
 routes/        routers de Express; routes/validaciones/ tiene las reglas de express-validator
@@ -60,7 +69,7 @@ router.post("/sedes", protegerRuta, soloRol("admin"), validarSede, validarCampos
 | Método | Para | Body | Ejemplo |
 |---|---|---|---|
 | `GET` | leer (nunca cambia datos) | no | `GET /api/sedes/:id` |
-| `POST` | crear, o una acción que no es CRUD | sí | `POST /api/reservas`, `POST /api/auth/login` |
+| `POST` | crear, o una acción que no es CRUD | normalmente | `POST /api/reservas`, `POST /api/auth/login`, `POST /api/auth/confirmar/:token` (sin body) |
 | `PUT` | actualizar un recurso con todos sus campos | sí | `PUT /api/sedes/:id` |
 | `PATCH` | cambiar **una parte** o hacer una acción sobre él | opcional | `PATCH /api/reservas/:id/cancelar` |
 | `DELETE` | borrar | no | `DELETE /api/canchas/:id` |

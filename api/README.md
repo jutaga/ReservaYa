@@ -26,8 +26,7 @@ Variables del `.env` (ver `.env.example`):
 | Frontend | `FRONTEND_URL` (sin `/` al final: los emails enlazan a `FRONTEND_URL/confirmar/<token>`) |
 | MySQL | `MYSQL_BD_HOST`, `MYSQL_BD_PORT`, `MYSQL_BD_NAME`, `MYSQL_BD_USER`, `MYSQL_BD_PASSWORD` |
 | Email (Mailtrap) | `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USER`, `EMAIL_PASS`: cada quien usa las credenciales SMTP de su propio inbox de Mailtrap (Email Testing → Inboxes → SMTP Settings) |
-
-Se añadirá `JWT_SECRET` (login).
+| Autenticación | `JWT_SECRET`: firma los JWT de la sesión. Cada quien genera el suyo con `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"` |
 
 ## Estructura
 

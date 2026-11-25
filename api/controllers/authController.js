@@ -1,8 +1,11 @@
 import { emailRegistro } from "../helpers/emails.js";
 import generarToken from "../helpers/generarToken.js";
+import { OPCIONES_COOKIE, generarJWT } from "../helpers/tokens.js";
 import Usuario from "../models/Usuario.js";
 
 const EMAIL_DUPLICADO = "Ese email ya está registrado";
+
+const CREDENCIALES_INCORRECTAS = "Email o contraseña incorrectos";
 
 const registro = async (req, res) => {
   const { nombre, email, password, telefono } = req.body;
@@ -64,4 +67,49 @@ const confirmarUsuario = async (req, res) => {
   });
 };
 
-export { registro, confirmarUsuario };
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  const usuario = await Usuario.findOne({
+    where: { email },
+  });
+
+  if (!usuario) return res.status(401).json({ error: CREDENCIALES_INCORRECTAS });
+
+  if (!(await usuario.comprobarPassword(password))) {
+    return res.status(401).json({ error: CREDENCIALES_INCORRECTAS });
+  }
+
+  if (!usuario.confirmado)
+    return res.status(403).json({ error: "Tu cuenta no ha sido confirmada" });
+
+  res.cookie("token", generarJWT({ id: usuario.id }), OPCIONES_COOKIE);
+
+  return res.status(200).json({
+    usuario: {
+      id: usuario.id,
+      nombre: usuario.nombre,
+      email: usuario.email,
+      rol: usuario.rol,
+    },
+  });
+};
+
+const perfil = async (req, res) => {
+  const { id, nombre, email, rol } = req.usuario;
+
+  return res.status(200).json({
+    usuario: {
+      id,
+      nombre,
+      email,
+      rol,
+    },
+  });
+};
+
+const logout = (_req, res) => {
+  return res.clearCookie("token", OPCIONES_COOKIE).status(200).json({ mensaje: "Sesión cerrada" });
+};
+
+export { registro, confirmarUsuario, login, perfil, logout };

@@ -36,7 +36,7 @@ const Usuario = db.define(
     confirmado: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
-      allowNull: false
+      allowNull: false,
     },
   },
   {
@@ -57,5 +57,9 @@ const Usuario = db.define(
     },
   },
 );
+
+Usuario.prototype.comprobarPassword = function (password) {
+  return bcrypt.compare(password, this.password);
+};
 
 export default Usuario;

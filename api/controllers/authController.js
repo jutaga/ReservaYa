@@ -1,5 +1,6 @@
 import { emailRegistro } from "../helpers/emails.js";
 import generarToken from "../helpers/generarToken.js";
+import generarJWT from "../helpers/tokens.js";
 import Usuario from "../models/Usuario.js";
 
 const EMAIL_DUPLICADO = "Ese email ya está registrado";
@@ -81,6 +82,13 @@ const login = async (req, res) => {
 
   if (!usuario.confirmado)
     return res.status(403).json({ error: "Tu cuenta no ha sido confirmada" });
+
+  res.cookie("token", generarJWT({ id: usuario.id }), {
+    httpOnly: true,
+    sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 24 * 60 * 60 * 1000,
+  });
 
   return res.status(200).json({
     usuario: {

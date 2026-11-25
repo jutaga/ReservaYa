@@ -8,9 +8,4 @@ router.get("/salud", (req, res) => {
   });
 });
 
-
-router.get("/prueba-error", () => {
-  throw new Error("prueba");
-});
-
 export default router;

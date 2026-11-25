@@ -142,7 +142,7 @@ button, input, select { font: inherit; color: inherit; }
 /* Formularios */
 .form { display: grid; gap: 16px; }
 .fila-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.campo { display: grid; gap: 6px; }
+.campo { display: grid; gap: 6px; align-content: start; } /* en .fila-2 no repartir la altura sobrante entre label e input */
 .campo-label { font-size: 14px; font-weight: 600; }
 .opcional { font-weight: 400; color: var(--text-3); font-size: 12px; margin-left: 4px; }
 .campo-input { position: relative; display: block; }

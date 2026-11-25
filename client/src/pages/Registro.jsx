@@ -60,7 +60,7 @@ export default function Registro() {
         <Campo label="Email" name="email" type="email" value={form.email} onChange={cambiar} error={errores.email} autoComplete="email" />
         <Campo label="Teléfono" name="telefono" type="tel" opcional value={form.telefono} onChange={cambiar} error={errores.telefono} autoComplete="tel" />
         <div className="fila-2">
-          <Campo label="Contraseña" name="password" type="password" value={form.password} onChange={cambiar} error={errores.password} autoComplete="new-password" ayuda="Mínimo 8 caracteres" />
+          <Campo label="Contraseña" name="password" type="password" value={form.password} onChange={cambiar} error={errores.password} autoComplete="new-password" ayuda="Mínimo 8 caracteres, sin espacios" />
           <Campo label="Repetir contraseña" name="repetir" type="password" value={form.repetir} onChange={cambiar} error={errores.repetir} autoComplete="new-password" />
         </div>
         <Boton type="submit" cargando={enviando}>Crear cuenta</Boton>

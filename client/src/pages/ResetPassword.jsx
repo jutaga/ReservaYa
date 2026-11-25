@@ -64,7 +64,7 @@ export default function ResetPassword() {
     <TarjetaAuth icono="lock" titulo="Nueva contraseña" subtitulo="Elige una contraseña que no uses en otros sitios.">
       <form onSubmit={enviar} noValidate className="form">
         <Aviso error={error} />
-        <Campo label="Nueva contraseña" name="password" type="password" value={form.password} onChange={cambiar} error={errores.password} autoComplete="new-password" ayuda="Mínimo 8 caracteres" autoFocus />
+        <Campo label="Nueva contraseña" name="password" type="password" value={form.password} onChange={cambiar} error={errores.password} autoComplete="new-password" ayuda="Mínimo 8 caracteres, sin espacios" autoFocus />
         <Campo label="Repetir contraseña" name="repetir" type="password" value={form.repetir} onChange={cambiar} error={errores.repetir} autoComplete="new-password" />
         <Boton type="submit" cargando={enviando}>Guardar contraseña</Boton>
       </form>

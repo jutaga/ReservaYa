@@ -14,7 +14,8 @@ export default function Confirmar() {
   useEffect(() => {
     if (llamado.current) return;
     llamado.current = true;
-    api(`/auth/confirmar/${encodeURIComponent(token)}`)
+    // POST porque confirmar cambia datos (confirmado = true, token = null). Sin body: el token va en la URL.
+    api(`/auth/confirmar/${encodeURIComponent(token)}`, { method: "POST" })
       .then((data) => setEstado({ ok: true, mensaje: data.mensaje }))
       .catch((error) => setEstado({ error }));
   }, [token]);

@@ -1,3 +1,4 @@
+import { emailRegistro } from "../helpers/emails.js";
 import generarToken from "../helpers/generarToken.js";
 import Usuario from "../models/Usuario.js";
 
@@ -12,13 +13,17 @@ const registro = async (req, res) => {
 
   if (emailExiste) return res.status(409).json({ error: EMAIL_DUPLICADO });
 
+  const token = generarToken();
+
+  let usuario;
+
   try {
-    await Usuario.create({
+    usuario = await Usuario.create({
       nombre,
       email,
       password,
       telefono: telefono || null,
-      token: generarToken(),
+      token,
     });
   } catch (err) {
     if (err.name === "SequelizeUniqueConstraintError") {
@@ -26,7 +31,37 @@ const registro = async (req, res) => {
     }
     throw err;
   }
+
+  try {
+    await emailRegistro({ nombre, email, token });
+  } catch (err) {
+    console.error("❌ No se pudo enviar el email de confirmación:", err);
+    await usuario.destroy();
+    throw err;
+  }
+
   res.status(201).json({ mensaje: "Cuenta creada. Revisa tu email para confirmarla" });
 };
 
-export { registro };
+const confirmarUsuario = async (req, res) => {
+  const { token } = req.params;
+
+  const usuario = await Usuario.findOne({
+    where: { token },
+  });
+
+  if (!usuario)
+    return res.status(400).json({
+      error: "Token no válido",
+    });
+
+  usuario.token = null;
+  usuario.confirmado = true;
+  await usuario.save();
+
+  return res.status(200).json({
+    mensaje: "Cuenta confirmada correctamente",
+  });
+};
+
+export { registro, confirmarUsuario };

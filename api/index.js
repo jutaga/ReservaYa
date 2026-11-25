@@ -2,6 +2,7 @@ import db from "./config/db.js";
 import cookieParser from "cookie-parser";
 import express from "express";
 import router from "./routes/routes.js";
+import authRoutes from "./routes/authRoutes.js";
 import { noEncontrado, manejarErrores } from "./middleware/errores.js";
 
 //Crear el servidor
@@ -13,6 +14,7 @@ app.use(express.json());
 
 try {
   await db.authenticate();
+  await db.sync(); //Sincronizar los modelos de la base de datos
   console.log("✅ Conectado a MySQL");
 } catch (error) {
   console.error("❌ No se pudo conectar a MySQL:", error.message);
@@ -25,6 +27,8 @@ try {
 const PORT = Number(process.env.PORT) || 3000; // usa 3000 si PORT no está en el .env
 
 app.use("/api/", router);
+
+app.use("/api/auth/", authRoutes);
 
 // Manejo de errores: SIEMPRE después de todas las rutas
 app.use(noEncontrado); // 404 si ninguna ruta respondió
@@ -44,4 +48,3 @@ app.listen(PORT, (error) => {
 
   console.log(`✅ Servidor corriendo en http://localhost:${PORT}`); // solo si arrancó bien
 });
-

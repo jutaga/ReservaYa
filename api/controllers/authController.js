@@ -100,4 +100,17 @@ const login = async (req, res) => {
   });
 };
 
-export { registro, confirmarUsuario, login };
+const perfil = async (req, res) => {
+  const { id, nombre, email, rol } = req.usuario;
+
+  return res.status(200).json({
+    usuario: {
+      id,
+      nombre,
+      email,
+      rol,
+    },
+  });
+};
+
+export { registro, confirmarUsuario, login, perfil };

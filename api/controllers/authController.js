@@ -4,6 +4,8 @@ import Usuario from "../models/Usuario.js";
 
 const EMAIL_DUPLICADO = "Ese email ya está registrado";
 
+const CREDENCIALES_INCORRECTAS = "Email o contraseña incorrectos";
+
 const registro = async (req, res) => {
   const { nombre, email, password, telefono } = req.body;
 
@@ -64,4 +66,30 @@ const confirmarUsuario = async (req, res) => {
   });
 };
 
-export { registro, confirmarUsuario };
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  const usuario = await Usuario.findOne({
+    where: { email },
+  });
+
+  if (!usuario) return res.status(401).json({ error: CREDENCIALES_INCORRECTAS });
+
+  if (!(await usuario.comprobarPassword(password))) {
+    return res.status(401).json({ error: CREDENCIALES_INCORRECTAS });
+  }
+
+  if (!usuario.confirmado)
+    return res.status(403).json({ error: "Tu cuenta no ha sido confirmada" });
+
+  return res.status(200).json({
+    usuario: {
+      id: usuario.id,
+      nombre: usuario.nombre,
+      email: usuario.email,
+      rol: usuario.rol,
+    },
+  });
+};
+
+export { registro, confirmarUsuario, login };

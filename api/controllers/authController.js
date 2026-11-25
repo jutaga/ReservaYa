@@ -1,6 +1,6 @@
 import { emailRegistro } from "../helpers/emails.js";
 import generarToken from "../helpers/generarToken.js";
-import generarJWT from "../helpers/tokens.js";
+import { OPCIONES_COOKIE, generarJWT } from "../helpers/tokens.js";
 import Usuario from "../models/Usuario.js";
 
 const EMAIL_DUPLICADO = "Ese email ya está registrado";
@@ -83,12 +83,7 @@ const login = async (req, res) => {
   if (!usuario.confirmado)
     return res.status(403).json({ error: "Tu cuenta no ha sido confirmada" });
 
-  res.cookie("token", generarJWT({ id: usuario.id }), {
-    httpOnly: true,
-    sameSite: "strict",
-    secure: process.env.NODE_ENV === "production",
-    maxAge: 24 * 60 * 60 * 1000,
-  });
+  res.cookie("token", generarJWT({ id: usuario.id }), OPCIONES_COOKIE);
 
   return res.status(200).json({
     usuario: {
@@ -113,4 +108,8 @@ const perfil = async (req, res) => {
   });
 };
 
-export { registro, confirmarUsuario, login, perfil };
+const logout = (_req, res) => {
+  return res.clearCookie("token", OPCIONES_COOKIE).status(200).json({ mensaje: "Sesión cerrada" });
+};
+
+export { registro, confirmarUsuario, login, perfil, logout };

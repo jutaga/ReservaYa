@@ -1,5 +1,11 @@
 import express from "express";
-import { confirmarUsuario, registro, login, perfil } from "../controllers/authController.js";
+import {
+  confirmarUsuario,
+  registro,
+  login,
+  perfil,
+  logout,
+} from "../controllers/authController.js";
 import { validarLogin, validarRegistro } from "./validaciones/authValidaciones.js";
 import { validarCampos } from "../middleware/validarCampos.js";
 import { protegerRuta } from "../middleware/protegerRuta.js";
@@ -14,6 +20,8 @@ router.post("/confirmar/:token", confirmarUsuario);
 
 router.post("/login", validarLogin, validarCampos, login);
 
-(router.get("/perfil", protegerRuta, perfil));
+router.get("/perfil", protegerRuta, perfil);
+
+router.post("/logout", logout);
 
 export default router;

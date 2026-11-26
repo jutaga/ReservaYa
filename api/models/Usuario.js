@@ -38,6 +38,7 @@ const Usuario = db.define(
       defaultValue: false,
       allowNull: false,
     },
+    versionToken: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
   },
   {
     hooks: {

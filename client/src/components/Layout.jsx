@@ -87,8 +87,9 @@ function MenuUsuario({ usuario }) {
   // y los elementos con href navegan con React Router (RouterProvider en main.jsx).
   return (
     <Dropdown>
-      <Button variant="ghost" className="h-auto gap-2 rounded-full py-1 ps-1 pe-2">
-        <Avatar size="sm" color="accent">
+      {/* El nombre visible va primero en la etiqueta (WCAG 2.5.3) y las iniciales se ocultan: solo decoran. */}
+      <Button variant="ghost" className="h-auto gap-2 rounded-full py-1 ps-1 pe-2" aria-label={`${usuario.nombre}, menú de tu cuenta`}>
+        <Avatar size="sm" color="accent" aria-hidden="true">
           <Avatar.Fallback className="bg-accent text-accent-foreground">{iniciales(usuario.nombre || usuario.email)}</Avatar.Fallback>
         </Avatar>
         <span className="max-w-[140px] truncate font-medium max-sm:sr-only">{usuario.nombre}</span>
@@ -102,17 +103,17 @@ function MenuUsuario({ usuario }) {
               <strong className="truncate text-foreground">{usuario.nombre}</strong>
               <span className="truncate text-xs font-normal text-muted">{usuario.email}</span>
             </Header>
-            <Dropdown.Item id="perfil" href="/perfil" textValue="Mi perfil">
+            <Dropdown.Item id="perfil" href="/perfil" textValue="Mi perfil" aria-label="Mi perfil">
               <Icon name="user" size={16} />
               <Label>Mi perfil</Label>
             </Dropdown.Item>
             {esAdmin && (
-              <Dropdown.Item id="admin" href="/admin" textValue="Panel de admin">
+              <Dropdown.Item id="admin" href="/admin" textValue="Panel de admin" aria-label="Panel de admin">
                 <Icon name="shield" size={16} />
                 <Label>Panel de admin</Label>
               </Dropdown.Item>
             )}
-            <Dropdown.Item id="salir" textValue="Cerrar sesión" variant="danger">
+            <Dropdown.Item id="salir" textValue="Cerrar sesión" aria-label="Cerrar sesión" variant="danger">
               <Icon name="logout" size={16} />
               <Label>Cerrar sesión</Label>
             </Dropdown.Item>

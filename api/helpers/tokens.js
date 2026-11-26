@@ -7,6 +7,6 @@ export const OPCIONES_COOKIE = {
   maxAge: 24 * 60 * 60 * 1000,
 };
 
-export const generarJWT = ({ id }) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+export const generarJWT = ({ id , v}) => {
+  return jwt.sign({ id, v }, process.env.JWT_SECRET, { expiresIn: "1d" });
 };

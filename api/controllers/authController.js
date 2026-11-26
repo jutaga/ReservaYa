@@ -1,7 +1,8 @@
-import { emailRegistro } from "../helpers/emails.js";
+import { emailRegistro, emailOlvidePassword } from "../helpers/emails.js";
 import generarToken from "../helpers/generarToken.js";
 import { OPCIONES_COOKIE, generarJWT } from "../helpers/tokens.js";
 import Usuario from "../models/Usuario.js";
+import jwt from "jsonwebtoken"; // al inicio del archivo
 
 const EMAIL_DUPLICADO = "Ese email ya está registrado";
 
@@ -83,7 +84,7 @@ const login = async (req, res) => {
   if (!usuario.confirmado)
     return res.status(403).json({ error: "Tu cuenta no ha sido confirmada" });
 
-  res.cookie("token", generarJWT({ id: usuario.id }), OPCIONES_COOKIE);
+  res.cookie("token", generarJWT({ id: usuario.id, v: usuario.versionToken }), OPCIONES_COOKIE);
 
   return res.status(200).json({
     usuario: {
@@ -96,7 +97,7 @@ const login = async (req, res) => {
 };
 
 const perfil = async (req, res) => {
-  const { id, nombre, email, rol } = req.usuario;
+  const { id, nombre, email, rol, telefono } = req.usuario;
 
   return res.status(200).json({
     usuario: {
@@ -104,12 +105,91 @@ const perfil = async (req, res) => {
       nombre,
       email,
       rol,
+      telefono,
     },
   });
 };
 
-const logout = (_req, res) => {
+const logout = async (req, res) => {
+  const { token } = req.cookies;
+
+  if (token) {
+    let decoded = null;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch {}
+
+    if (decoded) {
+      const { id, v } = decoded;
+      try {
+        // Solo si la versión coincide: un JWT viejo no puede cerrar las sesiones actuales.
+        await Usuario.increment("versionToken", { where: { id, versionToken: v } });
+      } catch (err) {
+        // Aunque falle la BD, la cookie se borra igual: el usuario debe poder cerrar sesión.
+        console.error("❌ No se pudo invalidar la sesión al cerrar sesión:", err);
+      }
+    }
+  }
   return res.clearCookie("token", OPCIONES_COOKIE).status(200).json({ mensaje: "Sesión cerrada" });
 };
 
-export { registro, confirmarUsuario, login, perfil, logout };
+const olvidePassword = async (req, res) => {
+  const { email } = req.body;
+
+  const usuario = await Usuario.findOne({
+    where: { email },
+  });
+
+  if (usuario?.confirmado) {
+    usuario.token = generarToken();
+    await usuario.save();
+
+    emailOlvidePassword({
+      nombre: usuario.nombre,
+      email: usuario.email,
+      token: usuario.token,
+    }).catch((err) => console.error("❌ No se pudo enviar el email de recuperación:", err));
+  }
+
+  return res.status(200).json({ mensaje: "Si el email existe, te enviamos instrucciones" });
+};
+
+const comprobarTokenReset = async (req, res) => {
+  const { token } = req.params;
+
+  const usuario = await Usuario.findOne({ where: { token, confirmado: true } });
+
+  if (!usuario) return res.status(400).json({ error: "Token no válido" });
+
+  return res.status(200).json({
+    valido: true,
+  });
+};
+
+const resetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+
+  const usuario = await Usuario.findOne({ where: { token, confirmado: true } });
+
+  if (!usuario) return res.status(400).json({ error: "Token no válido" });
+
+  usuario.password = password;
+  usuario.token = null;
+  usuario.versionToken += 1;
+
+  await usuario.save();
+
+  return res.status(200).json({ mensaje: "Contraseña actualizada" });
+};
+
+export {
+  registro,
+  confirmarUsuario,
+  login,
+  perfil,
+  logout,
+  olvidePassword,
+  comprobarTokenReset,
+  resetPassword,
+};

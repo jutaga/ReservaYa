@@ -36,6 +36,15 @@ const reglaPassword = () =>
     .notEmpty()
     .withMessage("La contraseña es obligatoria");
 
+const reglaPasswordNueva = () =>
+  reglaPassword()
+    .bail()
+    .isLength({ min: 8 })
+    .withMessage("Mínimo 8 caracteres")
+    .bail()
+    .matches(/^\S+$/)
+    .withMessage("La contraseña no puede contener espacios");
+
 // ── Registro ───────────────────────────────────────────────────────
 export const validarRegistro = [
   body("nombre")
@@ -54,13 +63,7 @@ export const validarRegistro = [
 
   reglaEmail(),
 
-  reglaPassword()
-    .bail()
-    .isLength({ min: 8 })
-    .withMessage("Mínimo 8 caracteres")
-    .bail()
-    .matches(/^\S+$/)
-    .withMessage("La contraseña no puede contener espacios"),
+  reglaPasswordNueva(),
 
   body("telefono")
     .optional({ values: "falsy" })
@@ -73,3 +76,7 @@ export const validarRegistro = [
 ];
 
 export const validarLogin = [reglaEmail(), reglaPassword()];
+
+export const validarOlvidePassword = [reglaEmail()];
+
+export const validarResetPassword = [reglaPasswordNueva()];

@@ -5,8 +5,16 @@ import {
   login,
   perfil,
   logout,
+  olvidePassword,
+  comprobarTokenReset,
+  resetPassword,
 } from "../controllers/authController.js";
-import { validarLogin, validarRegistro } from "./validaciones/authValidaciones.js";
+import {
+  validarLogin,
+  validarOlvidePassword,
+  validarRegistro,
+  validarResetPassword,
+} from "./validaciones/authValidaciones.js";
 import { validarCampos } from "../middleware/validarCampos.js";
 import { protegerRuta } from "../middleware/protegerRuta.js";
 
@@ -23,5 +31,11 @@ router.post("/login", validarLogin, validarCampos, login);
 router.get("/perfil", protegerRuta, perfil);
 
 router.post("/logout", logout);
+
+router.post("/olvide-password", validarOlvidePassword, validarCampos, olvidePassword);
+
+router.get("/reset-password/:token", comprobarTokenReset);
+
+router.post("/reset-password/:token", validarResetPassword, validarCampos, resetPassword);
 
 export default router;

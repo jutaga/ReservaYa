@@ -17,7 +17,7 @@ export const protegerRuta = async (req, res, next) => {
 
   const usuario = await Usuario.scope("ocultarDatos").findByPk(decoded.id);
 
-  if (!usuario) {
+  if (!usuario || decoded.v !== usuario.versionToken) {
     return res.clearCookie("token", OPCIONES_COOKIE).status(401).json({ error: "No autenticado" });
   }
 

@@ -1,12 +1,14 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 
 // El front corre en :5173 y reenvía /api y /uploads a la API (:3000).
 // Así el navegador ve un solo origen: las cookies funcionan y no hace falta CORS.
 const API = process.env.API_URL || "http://localhost:3000";
 
 export default defineConfig({
-  plugins: [react()],
+  // Tailwind 4 genera las clases de utilidad; HeroUI está construido sobre él.
+  plugins: [react(), tailwindcss()],
   server: {
     port: 5173,
     strictPort: true,

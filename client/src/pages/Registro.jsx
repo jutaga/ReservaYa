@@ -1,18 +1,15 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@heroui/react";
 import { api, erroresPorCampo } from "../api.js";
-import { Aviso, Boton, Campo, Icon, TarjetaAuth } from "../components/ui.jsx";
+import { Aviso, Boton, BotonLink, Campo, Icon, TarjetaAuth, useFormulario } from "../components/ui.jsx";
 
 const VACIO = { nombre: "", email: "", telefono: "", password: "", repetir: "" };
 
 export default function Registro() {
-  const [form, setForm] = useState(VACIO);
-  const [errores, setErrores] = useState({});
+  const { form, setErrores, campo } = useFormulario(VACIO);
   const [error, setError] = useState(null);
   const [enviando, setEnviando] = useState(false);
   const [creada, setCreada] = useState(null);
-
-  const cambiar = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const enviar = async (e) => {
     e.preventDefault();
@@ -44,27 +41,31 @@ export default function Registro() {
     return (
       <TarjetaAuth icono="mail" titulo="Revisa tu email"
         subtitulo={creada.mensaje || "Cuenta creada. Revisa tu email para confirmarla."}>
-        <p className="email-destacado">{creada.email}</p>
-        <p className="texto-suave centrado">Si no lo ves en unos minutos, revisa la carpeta de spam.</p>
-        <Link to="/login" className="btn btn-secundario btn-bloque">Ir a iniciar sesión</Link>
+        <p className="mx-auto max-w-full rounded-full bg-surface-secondary px-4 py-2 text-center font-semibold [overflow-wrap:anywhere]">
+          {creada.email}
+        </p>
+        <p className="text-center text-sm text-muted">Si no lo ves en unos minutos, revisa la carpeta de spam.</p>
+        <BotonLink to="/login" variante="secundario" fullWidth>Ir a iniciar sesión</BotonLink>
       </TarjetaAuth>
     );
   }
 
   return (
     <TarjetaAuth titulo="Crea tu cuenta" subtitulo="Reserva canchas en tu ciudad en segundos."
-      pie={<>¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link></>}>
-      <form onSubmit={enviar} noValidate className="form">
+      pie={<>¿Ya tienes cuenta? <Link href="/login">Inicia sesión</Link></>}>
+      <form onSubmit={enviar} noValidate className="grid gap-4">
         <Aviso error={error} />
-        <Campo label="Nombre" name="nombre" value={form.nombre} onChange={cambiar} error={errores.nombre} autoComplete="name" autoFocus />
-        <Campo label="Email" name="email" type="email" value={form.email} onChange={cambiar} error={errores.email} autoComplete="email" />
-        <Campo label="Teléfono" name="telefono" type="tel" opcional value={form.telefono} onChange={cambiar} error={errores.telefono} autoComplete="tel" />
-        <div className="fila-2">
-          <Campo label="Contraseña" name="password" type="password" value={form.password} onChange={cambiar} error={errores.password} autoComplete="new-password" ayuda="Mínimo 8 caracteres, sin espacios" />
-          <Campo label="Repetir contraseña" name="repetir" type="password" value={form.repetir} onChange={cambiar} error={errores.repetir} autoComplete="new-password" />
+        <Campo label="Nombre" {...campo("nombre")} autoComplete="name" autoFocus />
+        <Campo label="Email" type="email" {...campo("email")} autoComplete="username" spellCheck={false} />
+        <Campo label="Teléfono" type="tel" opcional {...campo("telefono")} autoComplete="tel" />
+        <div className="grid items-start gap-4 sm:grid-cols-2 sm:gap-3">
+          <Campo label="Contraseña" type="password" {...campo("password")} autoComplete="new-password" ayuda="Mínimo 8 caracteres, sin espacios" />
+          <Campo label="Repetir contraseña" type="password" {...campo("repetir")} autoComplete="new-password" />
         </div>
-        <Boton type="submit" cargando={enviando}>Crear cuenta</Boton>
-        <p className="texto-suave centrado nota-chica"><Icon name="shield" size={14} /> Te enviaremos un email para confirmar tu cuenta.</p>
+        <Boton type="submit" cargando={enviando} fullWidth>Crear cuenta</Boton>
+        <p className="flex items-center justify-center gap-1.5 text-center text-sm text-muted">
+          <Icon name="shield" size={14} /> Te enviaremos un email para confirmar tu cuenta.
+        </p>
       </form>
     </TarjetaAuth>
   );

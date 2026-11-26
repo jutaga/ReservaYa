@@ -28,5 +28,10 @@ export default function EstadoApi() {
     caida: "API sin conexión (puerto 3000)",
   }[estado];
 
-  return <span className={`estado-api estado-${estado}`}><span className="punto" />{texto}</span>;
+  return (
+    <span className={`estado-${estado} inline-flex items-center gap-2 font-medium`} role="status">
+      <span className="punto" />
+      {texto}
+    </span>
+  );
 }

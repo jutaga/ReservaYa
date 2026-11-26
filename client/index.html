@@ -3,7 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0f766e" />
+    <!-- El sitio tiene tema claro y oscuro: el navegador pinta el fondo correcto desde el primer momento -->
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#0f766e" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b1412" media="(prefers-color-scheme: dark)" />
+    <script>
+      // Solo para evitar un parpadeo del tema equivocado: aplica, antes de pintar, el tema
+      // guardado (si el usuario lo cambió) o el del sistema. HeroUI necesita la clase .dark/.light
+      // en <html>. Al arrancar React, TemaProvider (src/tema.jsx) toma el relevo.
+      (function () {
+        var guardado = null;
+        try { guardado = localStorage.getItem("color-scheme"); } catch (e) {}
+        if (guardado !== "light" && guardado !== "dark") guardado = null;
+        var visible = guardado || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.querySelector('meta[name="color-scheme"]').content = guardado || "light dark";
+        document.documentElement.classList.add(visible);
+        document.documentElement.setAttribute("data-theme", visible);
+      })();
+    </script>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230f766e'/><circle cx='16' cy='16' r='7' fill='none' stroke='white' stroke-width='2.5'/><path d='M16 4v24' stroke='white' stroke-width='2.5'/></svg>" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

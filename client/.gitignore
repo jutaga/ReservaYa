@@ -1,2 +1,5 @@
 node_modules
 dist
+
+# Configuración local de Claude Code: skill modern-web-guidance y settings (telemetría desactivada)
+.claude/

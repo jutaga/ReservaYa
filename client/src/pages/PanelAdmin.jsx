@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Card, Chip, Skeleton } from "@heroui/react";
 import { api } from "../api.js";
 import { Aviso, Icon } from "../components/ui.jsx";
 
@@ -19,21 +20,26 @@ export default function PanelAdmin() {
   }, []);
 
   return (
-    <div className="contenedor pagina">
-      <h1>Panel de admin</h1>
-      <p className="texto-suave">Gestiona tus sedes, canchas y reservas.</p>
+    <div className="contenedor py-10">
+      <h1 className="text-3xl font-bold">Panel de admin</h1>
+      <p className="text-muted">Gestiona tus sedes, canchas y reservas.</p>
 
-      {ping.ok && <Aviso tipo="ok">La API reconoce tu rol de admin (<code>GET /api/admin/ping</code> → 200).</Aviso>}
-      {ping.error && <Aviso error={ping.error} />}
+      <div className="mt-5">
+        {ping.cargando && <Skeleton className="h-14 w-full rounded-xl" />}
+        {ping.ok && <Aviso tipo="ok">La API reconoce tu rol de admin (<code>GET /api/admin/ping</code> → 200).</Aviso>}
+        {ping.error && <Aviso error={ping.error} />}
+      </div>
 
-      <div className="grid-3">
+      <div className="mt-6 grid gap-5 md:grid-cols-3">
         {SECCIONES.map((s) => (
-          <div key={s.titulo} className="tarjeta tarjeta-pronto">
-            <div className="tarjeta-icono"><Icon name={s.icono} size={22} /></div>
-            <h2>{s.titulo}</h2>
-            <p className="texto-suave">{s.texto}</p>
-            <span className="chip">Próximamente</span>
-          </div>
+          <Card key={s.titulo} className="gap-3 p-6">
+            <span className="grid size-11 place-items-center rounded-xl bg-accent-soft text-accent-soft-foreground">
+              <Icon name={s.icono} size={22} />
+            </span>
+            <h2 className="text-lg font-semibold">{s.titulo}</h2>
+            <p className="text-muted">{s.texto}</p>
+            <Chip size="sm" variant="soft" className="mt-auto w-fit">Próximamente</Chip>
+          </Card>
         ))}
       </div>
     </div>

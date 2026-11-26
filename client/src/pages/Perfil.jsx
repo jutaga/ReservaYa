@@ -1,51 +1,76 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../auth.jsx";
-import { Boton, Icon } from "../components/ui.jsx";
+import { Avatar, Card, Chip, Separator } from "@heroui/react";
+import { useAuth, useCerrarSesion } from "../auth.jsx";
+import { Boton, BotonLink, Icon, iniciales } from "../components/ui.jsx";
 
 export default function Perfil() {
-  const { usuario, logout } = useAuth();
-  const navigate = useNavigate();
-  const iniciales = (usuario.nombre || "?").trim().split(/\s+/).map((p) => p[0]).slice(0, 2).join("").toUpperCase();
+  const { usuario } = useAuth();
+  const salir = useCerrarSesion();
+  const esAdmin = usuario.rol === "admin";
 
-  const salir = async () => {
-    await logout();
-    navigate("/login", { state: { mensaje: "Sesión cerrada." } });
-  };
+  const datos = [
+    { icono: "user", etiqueta: "Nombre", valor: usuario.nombre },
+    { icono: "mail", etiqueta: "Email", valor: usuario.email },
+    { icono: "phone", etiqueta: "Teléfono", valor: usuario.telefono || <span className="text-muted">—</span> },
+    {
+      icono: "shield",
+      etiqueta: "Rol",
+      valor: esAdmin
+        ? <Chip size="sm" className="bg-[var(--admin-soft)] text-[var(--admin)]">Admin de sede</Chip>
+        : <Chip size="sm" variant="soft">Cliente</Chip>,
+    },
+  ];
 
   return (
-    <div className="contenedor pagina">
-      <div className="perfil-cab">
-        <span className="avatar avatar-grande">{iniciales}</span>
+    <div className="contenedor py-10">
+      <div className="flex items-center gap-4">
+        <Avatar size="lg" color="accent" className="size-16 text-xl">
+          <Avatar.Fallback className="bg-accent text-accent-foreground">{iniciales(usuario.nombre)}</Avatar.Fallback>
+        </Avatar>
         <div>
-          <h1>Hola, {usuario.nombre?.split(" ")[0]}</h1>
-          <p className="texto-suave">
-            {usuario.rol === "admin" ? "Administras sedes en ReservaYa." : "Listo para tu próximo partido."}
+          <h1 className="text-3xl font-bold">Hola, {usuario.nombre?.split(" ")[0]}</h1>
+          <p className="text-muted">
+            {esAdmin ? "Administras sedes en ReservaYa." : "Listo para tu próximo partido."}
           </p>
         </div>
       </div>
 
-      <div className="grid-2">
-        <section className="tarjeta">
-          <h2>Tus datos</h2>
-          <dl className="datos">
-            <div><dt><Icon name="user" /> Nombre</dt><dd>{usuario.nombre}</dd></div>
-            <div><dt><Icon name="mail" /> Email</dt><dd>{usuario.email}</dd></div>
-            <div><dt><Icon name="phone" /> Teléfono</dt><dd>{usuario.telefono || <span className="texto-suave">—</span>}</dd></div>
-            <div><dt><Icon name="shield" /> Rol</dt><dd><span className={`chip ${usuario.rol === "admin" ? "chip-admin" : ""}`}>{usuario.rol === "admin" ? "Admin de sede" : "Cliente"}</span></dd></div>
-          </dl>
-          <Boton variante="secundario" onClick={salir}><Icon name="logout" /> Cerrar sesión</Boton>
-        </section>
+      <div className="mt-8 grid gap-5 md:grid-cols-2">
+        <Card className="p-6">
+          <Card.Header>
+            <h2 className="text-xl font-semibold">Tus datos</h2>
+          </Card.Header>
+          <Card.Content>
+            <dl className="grid">
+              {datos.map((d, i) => (
+                <div key={d.etiqueta}>
+                  {i > 0 && <Separator />}
+                  <div className="flex items-center justify-between gap-4 py-3">
+                    <dt className="flex items-center gap-2 text-muted"><Icon name={d.icono} size={16} /> {d.etiqueta}</dt>
+                    <dd className="text-end font-medium [overflow-wrap:anywhere]">{d.valor}</dd>
+                  </div>
+                </div>
+              ))}
+            </dl>
+          </Card.Content>
+          <Card.Footer className="pt-2">
+            <Boton variante="secundario" onPress={salir}><Icon name="logout" size={16} /> Cerrar sesión</Boton>
+          </Card.Footer>
+        </Card>
 
-        <section className="tarjeta tarjeta-pronto">
-          <h2>{usuario.rol === "admin" ? "Tus sedes" : "Mis reservas"}</h2>
-          <div className="vacio vacio-chico">
-            <Icon name={usuario.rol === "admin" ? "court" : "calendar"} size={36} />
-            <p>{usuario.rol === "admin"
+        <Card className="p-6">
+          <Card.Header>
+            <h2 className="text-xl font-semibold">{esAdmin ? "Tus sedes" : "Mis reservas"}</h2>
+          </Card.Header>
+          <Card.Content className="grid flex-1 place-items-center gap-3 py-8 text-center text-muted">
+            <span className="grid size-14 place-items-center rounded-full bg-surface-secondary">
+              <Icon name={esAdmin ? "court" : "calendar"} size={28} />
+            </span>
+            <p>{esAdmin
               ? "Pronto podrás dar de alta tus sedes y canchas."
               : "Aquí verás tus próximas reservas en cuanto puedas reservar."}</p>
-            {usuario.rol === "admin" && <Link to="/admin" className="btn btn-primario btn-sm">Ir al panel</Link>}
-          </div>
-        </section>
+            {esAdmin && <BotonLink to="/admin" size="sm">Ir al panel</BotonLink>}
+          </Card.Content>
+        </Card>
       </div>
     </div>
   );

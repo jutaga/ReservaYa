@@ -1,4 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "@heroui/react";
 import { api } from "./api.js";
 
 const AuthContext = createContext(null);
@@ -41,3 +43,16 @@ export function AuthProvider({ children }) {
 }
 
 export const useAuth = () => useContext(AuthContext);
+
+// Cierra la sesión, vuelve al login y lo avisa con un toast.
+// (Un mensaje en el `state` de la navegación no sirve: si estás en una página protegida,
+// RutaProtegida redirige al login a la vez y su state pisa el mensaje.)
+export function useCerrarSesion() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  return async () => {
+    await logout();
+    navigate("/login");
+    toast.success("Sesión cerrada.");
+  };
+}

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { api } from "../api.js";
-import { Aviso, Cargando, TarjetaAuth } from "../components/ui.jsx";
+import { Aviso, BotonLink, Cargando, TarjetaAuth } from "../components/ui.jsx";
 
 // Página a la que lleva el enlace del email: FRONTEND_URL/confirmar/:token
 export default function Confirmar() {
@@ -25,7 +25,7 @@ export default function Confirmar() {
   if (estado.ok) {
     return (
       <TarjetaAuth icono="check" titulo="¡Cuenta confirmada!" subtitulo={estado.mensaje || "Ya puedes iniciar sesión y reservar."}>
-        <Link to="/login" className="btn btn-primario btn-bloque">Iniciar sesión</Link>
+        <BotonLink to="/login" fullWidth>Iniciar sesión</BotonLink>
       </TarjetaAuth>
     );
   }
@@ -34,7 +34,7 @@ export default function Confirmar() {
     <TarjetaAuth icono="alert" titulo="No pudimos confirmar tu cuenta"
       subtitulo="El enlace no es válido o ya se usó.">
       <Aviso error={estado.error} />
-      <Link to="/login" className="btn btn-secundario btn-bloque">Ir a iniciar sesión</Link>
+      <BotonLink to="/login" variante="secundario" fullWidth>Ir a iniciar sesión</BotonLink>
     </TarjetaAuth>
   );
 }

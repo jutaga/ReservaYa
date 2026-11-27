@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import {
   Alert,
+  AlertDialog,
   Button,
   Card,
   Description,
@@ -38,6 +39,12 @@ const PATHS = {
   chevron: <path d="M6 9l6 6 6-6" />,
   sun: <><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></>,
   moon: <path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z" />,
+  plus: <path d="M12 5v14M5 12h14" />,
+  edit: <><path d="M4 20h4L19 9l-4-4L4 16z" /><path d="M13.5 6.5l4 4" /></>,
+  trash: <><path d="M4 7h16M10 11v6M14 11v6" /><path d="M6 7l1 13h10l1-13M9 7V4h6v3" /></>,
+  image: <><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="9" cy="10" r="2" /><path d="M21 16l-5-5-9 9" /></>,
+  arrowLeft: <path d="M19 12H5M11 6l-6 6 6 6" />,
+  external: <><path d="M14 4h6v6M20 4l-9 9" /><path d="M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5" /></>,
 };
 
 export function Icon({ name, size = 18, ...rest }) {
@@ -174,6 +181,37 @@ export function Cargando({ texto = "Cargando…" }) {
       <Spinner size="lg" />
       {texto}
     </div>
+  );
+}
+
+// Confirmación antes de una acción que no se puede deshacer (borrar).
+// `pedir` = { titulo, texto, accion, alConfirmar } o null. Mientras alConfirmar() corre, el botón espera;
+// si falla, el diálogo se cierra igual y quien llama muestra el error.
+export function Confirmar({ pedir, onCerrar }) {
+  const [cargando, setCargando] = useState(false);
+  const confirmar = async () => {
+    setCargando(true);
+    try { await pedir.alConfirmar(); } finally { setCargando(false); onCerrar(); }
+  };
+  // Esc cancela: el AlertDialog de HeroUI lo trae desactivado (isKeyboardDismissDisabled = true por
+  // defecto) y aquí se activa. El foco empieza en "Cancelar", así que Enter tampoco borra por accidente.
+  return (
+    <AlertDialog.Backdrop isOpen={!!pedir} isKeyboardDismissDisabled={cargando}
+      onOpenChange={(abierto) => !abierto && !cargando && onCerrar()}>
+      <AlertDialog.Container>
+        <AlertDialog.Dialog className="sm:max-w-[420px]">
+          <AlertDialog.Header>
+            <AlertDialog.Icon status="danger" />
+            <AlertDialog.Heading>{pedir?.titulo}</AlertDialog.Heading>
+          </AlertDialog.Header>
+          <AlertDialog.Body><p>{pedir?.texto}</p></AlertDialog.Body>
+          <AlertDialog.Footer>
+            <Button variant="tertiary" onPress={onCerrar} isDisabled={cargando} autoFocus>Cancelar</Button>
+            <Boton variant="danger" cargando={cargando} onPress={confirmar}>{pedir?.accion ?? "Eliminar"}</Boton>
+          </AlertDialog.Footer>
+        </AlertDialog.Dialog>
+      </AlertDialog.Container>
+    </AlertDialog.Backdrop>
   );
 }
 

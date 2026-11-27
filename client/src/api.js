@@ -10,16 +10,22 @@ export class ApiError extends Error {
   }
 }
 
-export async function api(path, { method = "GET", body } = {}) {
+// `body` puede ser un objeto (se envía como JSON) o un FormData (archivos). Con FormData no se pone
+// Content-Type: el navegador añade "multipart/form-data; boundary=…", y sin el boundary multer no lo lee.
+// `signal` permite cancelar la petición (por ejemplo, si cambian los filtros antes de que responda).
+export async function api(path, { method = "GET", body, signal } = {}) {
+  const esArchivo = body instanceof FormData;
   let res;
   try {
     res = await fetch(`/api${path}`, {
       method,
       credentials: "same-origin",
-      headers: body ? { "Content-Type": "application/json" } : {},
-      body: body ? JSON.stringify(body) : undefined,
+      headers: body && !esArchivo ? { "Content-Type": "application/json" } : {},
+      body: esArchivo ? body : body ? JSON.stringify(body) : undefined,
+      signal,
     });
-  } catch {
+  } catch (err) {
+    if (err.name === "AbortError") throw err;
     throw offline();
   }
 

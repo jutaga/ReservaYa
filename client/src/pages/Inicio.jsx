@@ -1,14 +1,9 @@
-import { Button, Card, InputGroup, Label, ListBox, Select, TextField } from "@heroui/react";
+import { Link } from "react-router-dom";
+import { Card } from "@heroui/react";
 import { useAuth } from "../auth.jsx";
+import { DEPORTES } from "../sedes.js";
+import Buscador from "../components/Buscador.jsx";
 import { BotonLink, Icon } from "../components/ui.jsx";
-
-const DEPORTES = [
-  { id: "futbol5", nombre: "Fútbol 5", emoji: "⚽" },
-  { id: "futbol7", nombre: "Fútbol 7", emoji: "🥅" },
-  { id: "tenis", nombre: "Tenis", emoji: "🎾" },
-  { id: "padel", nombre: "Pádel", emoji: "🏓" },
-  { id: "baloncesto", nombre: "Baloncesto", emoji: "🏀" },
-];
 
 const PASOS = [
   { icono: "search", titulo: "Busca", texto: "Filtra por ciudad y deporte para encontrar sedes cerca de ti." },
@@ -33,7 +28,7 @@ export default function Inicio() {
               Fútbol, tenis, pádel y baloncesto. Mira qué horas quedan libres y asegura tu turno sin llamadas ni esperas.
             </p>
 
-            <Buscador />
+            <Buscador className="mt-7" />
           </div>
 
           <div className="relative max-w-[460px] pt-5 pb-10 lg:max-w-none" aria-hidden="true">
@@ -57,8 +52,10 @@ export default function Inicio() {
         <h2 className="text-2xl font-bold">¿A qué quieres jugar?</h2>
         <ul className="mt-4 flex flex-wrap gap-3">
           {DEPORTES.map((d) => (
-            <li key={d.id} className="flex items-center gap-2.5 rounded-full border border-border bg-surface px-4 py-2.5 font-semibold shadow-surface">
-              <span className="text-2xl leading-none" aria-hidden="true">{d.emoji}</span>{d.nombre}
+            <li key={d.id}>
+              <Link to={`/sedes?deporte=${d.id}`} className="flex items-center gap-2.5 rounded-full border border-border bg-surface px-4 py-2.5 font-semibold shadow-surface transition hover:border-accent hover:text-accent">
+                <span className="text-2xl leading-none" aria-hidden="true">{d.emoji}</span>{d.nombre}
+              </Link>
             </li>
           ))}
         </ul>
@@ -87,43 +84,12 @@ export default function Inicio() {
           <div className="flex flex-col items-start justify-between gap-6 rounded-3xl bg-linear-120 from-[#0f766e] to-[#115e59] p-8 text-white sm:flex-row sm:items-center">
             <div>
               <h2 className="text-2xl font-bold">¿Listo para el próximo partido?</h2>
-              <p className="opacity-85">Crea tu cuenta gratis y reserva en cuanto abran las sedes.</p>
+              <p className="opacity-85">Crea tu cuenta gratis y reserva en cuanto se abran las reservas.</p>
             </div>
             <BotonLink to="/registro" variante="secundario" className="bg-white text-[#0b5f58] hover:bg-white/90">Crear cuenta</BotonLink>
           </div>
         </section>
       )}
     </div>
-  );
-}
-
-// Buscador de sedes. Se activa en el Sprint 2; de momento solo se ve.
-function Buscador() {
-  return (
-    <form onSubmit={(e) => e.preventDefault()} aria-describedby="buscador-nota"
-      className="mt-7 grid gap-2 rounded-2xl border border-border bg-surface p-2 shadow-surface sm:grid-cols-[1fr_1fr_auto]">
-      <TextField isDisabled aria-label="Ciudad" variant="secondary">
-        <InputGroup variant="secondary">
-          <InputGroup.Prefix><Icon name="pin" size={16} /></InputGroup.Prefix>
-          <InputGroup.Input placeholder="Ciudad" />
-        </InputGroup>
-      </TextField>
-      <Select isDisabled aria-label="Deporte" placeholder="Cualquier deporte" variant="secondary">
-        <Label className="sr-only">Deporte</Label>
-        <Select.Trigger>
-          <Select.Value />
-          <Select.Indicator />
-        </Select.Trigger>
-        <Select.Popover>
-          <ListBox>
-            {DEPORTES.map((d) => (
-              <ListBox.Item key={d.id} id={d.id} textValue={d.nombre}>{d.nombre}<ListBox.ItemIndicator /></ListBox.Item>
-            ))}
-          </ListBox>
-        </Select.Popover>
-      </Select>
-      <Button type="submit" isDisabled><Icon name="search" size={16} /> Buscar</Button>
-      <p id="buscador-nota" className="px-2 pb-1 text-sm text-muted sm:col-span-3">El buscador de sedes se activa en el Sprint 2.</p>
-    </form>
   );
 }

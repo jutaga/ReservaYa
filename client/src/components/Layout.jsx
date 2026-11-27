@@ -34,19 +34,23 @@ function Cabecera() {
   return (
     <header className="sticky top-0 z-20 border-b border-separator bg-background/85 backdrop-blur-md">
       <div className="contenedor flex h-16 items-center gap-3 sm:gap-6">
-        <Link to="/" className="flex shrink-0 items-center gap-2 font-display text-lg font-bold tracking-tight sm:gap-2.5 sm:text-xl">
+        <Link to="/" aria-label="ReservaYa, inicio" className="flex shrink-0 items-center gap-2 font-display text-lg font-bold tracking-tight sm:gap-2.5 sm:text-xl">
           <span className="grid size-8 place-items-center rounded-xl bg-accent text-accent-foreground sm:size-9">
             <Icon name="court" size={20} />
           </span>
-          <span>Reserva<span className="text-accent">Ya</span></span>
+          {/* En pantallas muy estrechas sin sesión no cabe todo: queda solo el icono */}
+          <span className="max-[420px]:sr-only">Reserva<span className="text-accent">Ya</span></span>
         </Link>
         <nav className="hidden gap-1 sm:flex" aria-label="Principal">
           <NavLink to="/" end className={claseNav}>Inicio</NavLink>
-          <span className="flex cursor-default items-center gap-1.5 px-3 py-1.5 font-medium text-muted/70" title="Llega en el Sprint 2">
-            Sedes <Chip size="sm" variant="soft">pronto</Chip>
-          </span>
+          <NavLink to="/sedes" className={claseNav}>Sedes</NavLink>
         </nav>
         <div className="ms-auto flex items-center gap-1 sm:gap-2">
+          {/* En móvil la navegación está oculta: este botón lleva al catálogo */}
+          <Link to="/sedes" aria-label="Buscar sedes"
+            className="grid size-9 place-items-center rounded-lg text-muted hover:bg-default hover:text-foreground sm:hidden">
+            <Icon name="search" size={18} />
+          </Link>
           <BotonTema />
           {cargando ? null : usuario ? <MenuUsuario usuario={usuario} /> : (
             <>

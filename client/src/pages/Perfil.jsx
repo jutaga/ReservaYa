@@ -66,7 +66,7 @@ export default function Perfil() {
               <Icon name={esAdmin ? "court" : "calendar"} size={28} />
             </span>
             <p>{esAdmin
-              ? "Pronto podrás dar de alta tus sedes y canchas."
+              ? "Da de alta tus sedes, su foto y sus canchas desde el panel."
               : "Aquí verás tus próximas reservas en cuanto puedas reservar."}</p>
             {esAdmin && <BotonLink to="/admin" size="sm">Ir al panel</BotonLink>}
           </Card.Content>

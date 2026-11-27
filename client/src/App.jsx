@@ -9,6 +9,8 @@ import OlvidePassword from "./pages/OlvidePassword.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
 import Perfil from "./pages/Perfil.jsx";
 import PanelAdmin from "./pages/PanelAdmin.jsx";
+import Sedes from "./pages/Sedes.jsx";
+import Sede from "./pages/Sede.jsx";
 import NoEncontrado from "./pages/NoEncontrado.jsx";
 
 export default function App() {
@@ -16,6 +18,8 @@ export default function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<Inicio />} />
+        <Route path="sedes" element={<Sedes />} />
+        <Route path="sedes/:id" element={<Sede />} />
         <Route path="registro" element={<Registro />} />
         <Route path="login" element={<Login />} />
         <Route path="confirmar/:token" element={<Confirmar />} />

@@ -1,0 +1,13 @@
+{
+  // Le dice a VS Code que todos los .js de /api son un mismo proyecto,
+  // así el autocompletado y los auto-imports ven archivos aunque no estén abiertos.
+  "compilerOptions": {
+    // Node con "type": "module": los auto-imports se escriben con la extensión .js
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "target": "es2022",
+    // Sin revisión de tipos: los errores de código los marca ESLint
+    "checkJs": false
+  },
+  "exclude": ["node_modules"]
+}

@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import express from "express";
 import router from "./routes/routes.js";
 import authRoutes from "./routes/authRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js"
 import { noEncontrado, manejarErrores } from "./middleware/errores.js";
 
 //Crear el servidor
@@ -29,6 +30,9 @@ const PORT = Number(process.env.PORT) || 3000; // usa 3000 si PORT no está en e
 app.use("/api/", router);
 
 app.use("/api/auth/", authRoutes);
+
+app.use("/api/admin", adminRoutes)
+
 
 // Manejo de errores: SIEMPRE después de todas las rutas
 app.use(noEncontrado); // 404 si ninguna ruta respondió
